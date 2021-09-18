@@ -28,6 +28,14 @@ except NameError:
     xrange = range  # Python 3
 
 
+def load_annotation(path):
+    ret = {}
+    anno = json.load(open(path, 'r'))["annotations"]
+    for item in anno:
+        ret[item["img"]] = {0: item["content"], 1: item["form"], 2: item["context"]}
+    return ret
+
+
 class Attributes(object):
     def __init__(self):
         self.args_dict = self.get_params()
@@ -356,7 +364,7 @@ if __name__ == '__main__':
     for phase in ['train', 'test']:
         img_root_dir = 'context_art_classification/Data/SemArt/Images/'
 
-        data = json.load(open('../MaskedSentenceGeneration/data/annotated_{}.json'.format(phase), 'r'))
+        data = load_annotation('../MaskedSentenceGeneration/annotations/semart_topic_annotated_{}.json'.format(phase))
         img_names = list(data.keys())
 
         image_paths = [os.path.join(img_root_dir, x.strip()) for x in img_names]

@@ -9,6 +9,14 @@ from utils import sentence_normalize, un_capitalize, merge_entities, check_exact
 nlp = StanfordCoreNLP('/data00/user1/data/corenlp/')
 
 
+def load_annotation(path):
+    ret = {}
+    anno = json.load(open(path, 'r'))["annotations"]
+    for item in anno:
+        ret[item["img"]] = {0: item["content"], 1: item["form"], 2: item["context"]}
+    return ret
+
+
 def extract_words_from_knowledge(knowledge, candidate_words):
     topk = 3
     query = str(knowledge['Query']).strip().split(' ')
@@ -111,8 +119,8 @@ def create_dataset(output_folder):
     schools = list(df_train['SCHOOL']) + list(df_val['SCHOOL']) + list(df_test['SCHOOL'])
     times = list(df_train['TIMEFRAME']) + list(df_val['TIMEFRAME']) + list(df_test['TIMEFRAME'])
     authors = list(df_train['AUTHOR']) + list(df_val['AUTHOR']) + list(df_test['AUTHOR'])
-    sents_train = json.load(open('../MaskedSentenceGeneration/data/annotated_train.json', 'r'))
-    sents_test = json.load(open('../MaskedSentenceGeneration/data/annotated_test.json', 'r'))
+    sents_train = load_annotation('annotations/semart_topic_annotated_train.json')
+    sents_test = load_annotation('annotations/semart_topic_annotated_test.json')
 
     knowledge_train, knowledge_test = {}, {}
     with open('../KnowledgeRetrieval/retrieved_paragraph_train.json', 'r') as f:

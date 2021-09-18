@@ -11,6 +11,14 @@ import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
+def load_annotation(path):
+    ret = {}
+    anno = json.load(open(path, 'r'))["annotations"]
+    for item in anno:
+        ret[item["img"]] = {0: item["content"], 1: item["form"], 2: item["context"]}
+    return ret
+
+
 def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=3, max_len=100):
 
     vocab_size = len(word_map)
@@ -125,8 +133,7 @@ def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=
 def inference(args):
     image_root = '../KnowledgeRetrieval/context_art_classification/Data/SemArt/Images/'
 
-    data_test = json.load(open('data/annotated_test.json', 'r'))
-    # data_test = json.load(open('data/annotated_train.json', 'r'))
+    data_test = load_annotation('annotations/semart_topic_annotated_test.json')
     img_names = list(data_test.keys())
 
     checkpoint = torch.load(args.model)

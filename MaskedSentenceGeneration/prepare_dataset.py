@@ -16,6 +16,14 @@ nlp = StanfordCoreNLP('/data00/user1/data/corenlp/')
 num_topics = 3
 
 
+def load_annotation(path):
+    ret = {}
+    anno = json.load(open(path, 'r'))["annotations"]
+    for item in anno:
+        ret[item["img"]] = {0: item["content"], 1: item["form"], 2: item["context"]}
+    return ret
+
+
 def tokenize(imgs, max_len=200):
     bad_cnt = 0
     for img in tqdm(imgs):
@@ -77,8 +85,8 @@ def create_dataset(image_folder, output_folder, max_len=100, min_len=5, min_word
     schools = list(df_train['SCHOOL']) + list(df_val['SCHOOL']) + list(df_test['SCHOOL'])
     times = list(df_train['TIMEFRAME']) + list(df_val['TIMEFRAME']) + list(df_test['TIMEFRAME'])
     authors = list(df_train['AUTHOR']) + list(df_val['AUTHOR']) + list(df_test['AUTHOR'])
-    sents_train = json.load(open('data/annotated_train.json', 'r'))
-    sents_test = json.load(open('data/annotated_test.json', 'r'))
+    sents_train = load_annotation('annotations/semart_topic_annotated_train.json')
+    sents_test = load_annotation('annotations/semart_topic_annotated_test.json')
 
     imgs = []
 
